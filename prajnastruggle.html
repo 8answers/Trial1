@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Fade In Effect</title>
+    <style>
+        body {
+            margin: 0;
+            background: black;
+        }
+
+        #logo-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .rolling-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-family: Copperplate, 'Copperplate Gothic Light', serif;
+            color: white;
+            letter-spacing: 2px;
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            
+        }
+
+        .number {
+            font-size: 80px;
+        }
+
+        .text {
+            font-size: 40px;
+        }
+
+        @keyframes rollDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-60px);
+            }
+            20%, 80% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .fade-in-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div id="logo-container">
+        <div class="rolling-text">
+            <span class="letter number">8</span>
+            <span class="letter text">A</span>
+            <span class="letter text">N</span>
+            <span class="letter text">S</span>
+            <span class="letter text">W</span>
+            <span class="letter text">E</span>
+            <span class="letter text">R</span>
+            <span class="letter text">S</span>
+        </div>
+    </div>
+
+    <div class="video-container">
+        <video id="myVideo" class="fade-in-video" muted loop>
+            <source src="start.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <script>
+        const letters = document.querySelectorAll('.letter');
+        const videoContainer = document.querySelector('.video-container');
+        const video = document.getElementById('myVideo');
+
+        function startAnimation() {
+            const rollDuration = 1.6;
+            const delay = 0.15;
+            const totalRollDuration = rollDuration + (letters.length - 1) * delay;
+
+            // Start the 8ANSWERS animation
+            letters.forEach((letter, index) => {
+                letter.style.animation = `rollDown ${rollDuration}s ${index * delay}s forwards`;
+            });
+
+            // Start video halfway through the animation
+            setTimeout(() => {
+                videoContainer.style.opacity = '1';
+                video.play();
+            }, (totalRollDuration / 2) * 1000);
+
+            // Fade out all letters at once after they have rolled down
+            setTimeout(() => {
+                letters.forEach(letter => {
+                    letter.style.animation = `fadeOut 1s forwards`; // Fade out all letters at once
+                });
+            }, totalRollDuration * 1000);
+
+            // Restart animation after fading out
+            setTimeout(() => {
+                // Reset the opacity and transform for each letter before restarting
+                letters.forEach(letter => {
+                    letter.style.opacity = '0'; // Reset opacity
+                    letter.style.transform = 'translateY(-60px)'; // Reset position
+                });
+                startAnimation(); // Call the function again to repeat the animation
+            }, (totalRollDuration + 1) * 1000); // Add 1 second for fade out
+        }
+
+        // Start the animation sequence when page loads
+        window.onload = startAnimation;
+    </script>
+</body>
+</html>
